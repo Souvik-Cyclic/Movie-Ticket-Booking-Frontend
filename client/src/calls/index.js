@@ -7,5 +7,5 @@ export const axiosInstance = axios.create({
         'Content-Type' : 'application/json',
         'authorization' : `Bearer ${localStorage.getItem('token')}`
     },
-    baseURL : '/'
+    baseURL : process.env.REACT_APP_API_URL || '/'
 })
