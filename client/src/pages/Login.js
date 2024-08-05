@@ -1,16 +1,33 @@
-import React, { useEffect } from 'react'
-import { Button, Form, Input, message } from "antd";
+import React, { useEffect } from 'react';
+import { Button, Form, Input, message, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginUser } from '../calls/users';
 
+const predefinedCredentials = [
+  { email: 'user@test.com', password: '1234' },
+  { email: 'partner@test.com', password: '1234' },
+  { email: 'admin@test.com', password: '1234' },
+];
+
 function Login() {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    if(localStorage.getItem('token')){
-        navigate("/");
+    if (localStorage.getItem('token')) {
+      navigate("/");
     }
-  }, [navigate]); 
+  }, [navigate]);
+
+  const handleSelect = (value) => {
+    const selected = predefinedCredentials.find(cred => cred.email === value);
+    if (selected) {
+      form.setFieldsValue({
+        email: selected.email,
+        password: selected.password,
+      });
+    }
+  };
 
   const onFinish = async (values) => {
     try {
@@ -51,9 +68,37 @@ function Login() {
           marginBottom: '20px',
           color: '#333',
         }}>Login to BookMyShow</h1>
-        <Form layout="vertical" onFinish={onFinish} style={{
+        <p style={{
+          fontSize: '14px',
+          color: '#666',
           marginBottom: '20px',
         }}>
+          <strong>Note:</strong> Predefined users are for testing purposes only.
+        </p>
+        <Form layout="vertical" onFinish={onFinish} form={form} style={{
+          marginBottom: '20px',
+        }}>
+          <Form.Item
+            label="Select Predefined User"
+            style={{
+              marginBottom: '20px',
+            }}
+          >
+            <Select
+              placeholder="Select a user"
+              onChange={handleSelect}
+              style={{
+                width: '100%',
+              }}
+            >
+              {predefinedCredentials.map((cred, index) => (
+                <Select.Option key={index} value={cred.email}>
+                  {cred.email}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
           <Form.Item
             label="Email"
             htmlFor="email"
